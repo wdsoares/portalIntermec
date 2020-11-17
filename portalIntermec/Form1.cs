@@ -72,6 +72,10 @@ namespace portalIntermec
             {
                 this.reader.DeleteGPITrigger(GPITrig);
             }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

@@ -66,6 +66,14 @@ namespace portalIntermec
             return address;
         }
 
+        public void startReading()
+        {
+            while(true)
+            {
+                this.reader.Read();
+            }
+        }
+
         public void closeConn()
         {
             try

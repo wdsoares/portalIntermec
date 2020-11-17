@@ -1,0 +1,20 @@
+{
+    "intermec":
+    {
+        "address": "tcp://192.168.0.203"
+    },
+    "portal":
+    {
+        "user": "root",
+        "password": "admin",
+        "host": "localhost",
+        "port": "3306"
+    },
+    "adonis":
+    {
+        "user": "root",
+        "password": "admin",
+        "host": "localhost",
+        "port": "3306"
+    }
+}

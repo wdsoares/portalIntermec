@@ -83,6 +83,7 @@ namespace portalIntermec
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Name = "Form2";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Portal - Intermec | Alterar endereço do leitor";
             this.ResumeLayout(false);
             this.PerformLayout();

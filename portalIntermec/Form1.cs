@@ -27,8 +27,9 @@ namespace portalIntermec
         private bool m_IsContinuousReadStarted = false;
         private bool m_IsTriggerSet = false;
         private int idCount = 0;
-
-        List<Tag> lista = new List<Tag>();
+        private bool isReading = false;
+        private bool isConnected = false;
+        private BindingList<Tag> lista = new BindingList<Tag>();
 
         public Form1()
         {
@@ -41,19 +42,12 @@ namespace portalIntermec
             this.dataGridView1.Columns[0].HeaderText = "ID";
             this.dataGridView1.Columns[1].HeaderText = "Data/Hora";
             this.dataGridView1.Columns[2].HeaderText = "Tag";
+            this.dataGridView1.Columns[0].Width = 40;
+            this.dataGridView1.Columns[1].Width = 200;
+            this.dataGridView1.Columns[2].Width = 325;
             this.db = new Database();
             this.dbAdonis = new DatabaseAdonis();
             this.address = readConfigFile();
-            //try
-            //{
-            //    reader = new BRIReader(this, address);
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show("Impossível conectar ao host. Erro: " + ex.Message);
-            //    System.Environment.Exit(1);
-            //}
-
 
             try
             {
@@ -88,11 +82,11 @@ namespace portalIntermec
             return address;
         }
 
-        public void startReading()
+        private void readTags()
         {
-            while(true)
+            while (isReading)
             {
-                this.reader.Read();
+                this.EventRead(5000);
             }
         }
 
@@ -237,6 +231,52 @@ namespace portalIntermec
                                                  "Orientador: João Baptista Martins{0}" +
                                                  "gmicro - UFSM", Environment.NewLine);
             MessageBox.Show(outputMessage);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(!isConnected)
+            {
+                MessageBox.Show("Leitor desconectado. Estabeleça conexão antes de iniciar leitura!");
+            }
+            else
+            {
+                if (!isReading)
+                {
+                    this.isReading = true;
+                    this.readTags();
+                }
+                else
+                {
+                    MessageBox.Show("Uma sessão de leitura já está iniciada!");
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.isReading = false;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if(!isConnected)
+            {
+                try
+                {
+                    reader = new BRIReader(this, address);
+                    this.isConnected = true;
+                    MessageBox.Show("Leitor conectado com sucesso!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Impossível conectar ao host. Erro: " + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Leitor já está conectado!");
+            }
         }
     }
 }

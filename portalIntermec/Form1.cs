@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace portalIntermec
 {
@@ -22,13 +23,10 @@ namespace portalIntermec
         private string address = default;
         private GPITrigger GPITrig = null;
         private Tag_EventHandlerAdv m_TagEventHandler = null;
-        private Timer m_PollTimer = null;
-        private Timer m_StopReadTimer = null;
-        private bool m_IsContinuousReadStarted = false;
-        private bool m_IsTriggerSet = false;
         private int idCount = 0;
         private bool isReading = false;
         private bool isConnected = false;
+        private bool m_IsContinuousReadStarted = false;
         private BindingList<Tag> lista = new BindingList<Tag>();
 
         public Form1()
@@ -84,10 +82,7 @@ namespace portalIntermec
 
         private void readTags()
         {
-            while (isReading)
-            {
-                this.EventRead(5000);
-            }
+            this.EventRead();
         }
 
         void BRIReaderEventHandler_Tag(object sender, EVTADV_Tag_EventArgs EvtArgs)
@@ -95,7 +90,7 @@ namespace portalIntermec
             this.onTagRead(EvtArgs.Tag);
         }
 
-        public void EventRead(int aReadInterval)
+        public void EventRead()
         {
             //*****
             //* Sets up an event handler to handle the tag events. This event
@@ -110,21 +105,22 @@ namespace portalIntermec
             //*****
             //* Sets up a timer to stop the continuous read.
             //*****
-            if (null == m_StopReadTimer)
+
+/*            if (null == m_StopReadTimer)
             {
                 m_StopReadTimer = new Timer();
                 m_StopReadTimer.Tick += new EventHandler(TimerTick_StopRead);
             }
             m_StopReadTimer.Enabled = false;
             m_StopReadTimer.Interval = aReadInterval;
-
+*/
             try
             {
                 if (reader.StartReadingTags(BRIReader.TagReportOptions.EVENT))
                 {
  
                     m_IsContinuousReadStarted = true;
-                    m_StopReadTimer.Enabled = true; // Start the timer to stop continuous read.
+                    //m_StopReadTimer.Enabled = true; // Start the timer to stop continuous read.
                 }
                 else
                 {
@@ -137,26 +133,7 @@ namespace portalIntermec
             }
         }
 
-        void TimerTick_PollTags(object sender, EventArgs e)
-        {
-            try
-            {
-                if (reader.PollTags())
-                {
-                    this.insertTags(reader.Tags);
-                }
-                else
-                {
-                    MessageBox.Show("Erro na leitura de tags!");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Falha ao ler tags do leitor, erro: " + ex.Message);
-            }
-        }
-
-        void TimerTick_StopRead(object sender, EventArgs e)
+/*        void TimerTick_StopRead(object sender, EventArgs e)
         {
             if (m_PollTimer != null)
             {
@@ -173,8 +150,7 @@ namespace portalIntermec
             {
                 MessageBox.Show("Falha ao terminar leitura contínua, erro: " + ex.Message);
             }
-
-        }
+        }*/
 
         public void onTagRead(Intermec.DataCollection.RFID.Tag tag)
         {
@@ -182,6 +158,7 @@ namespace portalIntermec
             {
                 if (db.checkDupe(tag.ToString()) == 0)
                 {
+                    this.idCount++;
                     this.lista.Add(new Tag(this.idCount, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), tag.ToString()));
                     this.dataGridView1.Refresh();
                     db.insertDB(tag.ToString());
@@ -222,6 +199,7 @@ namespace portalIntermec
         {
             Form2 f2 = new Form2();
             f2.ShowDialog();
+            this.address = readConfigFile();
         }
 
         private void sobreToolStripMenuItem_Click(object sender, EventArgs e)
@@ -245,6 +223,7 @@ namespace portalIntermec
                 {
                     this.isReading = true;
                     this.readTags();
+                    button1.Enabled = false;
                 }
                 else
                 {
@@ -264,9 +243,20 @@ namespace portalIntermec
             {
                 try
                 {
-                    reader = new BRIReader(this, address);
+                    this.reader = new BRIReader(this, address);
                     this.isConnected = true;
                     MessageBox.Show("Leitor conectado com sucesso!");
+                    button3.Enabled = false;
+                    try
+                    {
+                        this.reader.Attributes.RFIDTagType = BRIReader.RFIDTagTypes.EPCC1G2;
+                        this.reader.Attributes.ReadTries = 3;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Failed to set reader attribute, exception= " + ex.Message, "Error");
+                        return;
+                    }
                 }
                 catch (Exception ex)
                 {

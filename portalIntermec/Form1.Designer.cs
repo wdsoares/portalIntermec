@@ -84,14 +84,14 @@ namespace portalIntermec
             this.configToolStripMenuItem.Name = "configToolStripMenuItem";
             this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.configToolStripMenuItem.Text = "Config";
-            this.configToolStripMenuItem.Click += new System.EventHandler(this.configToolStripMenuItem_Click);
+            this.configToolStripMenuItem.Click += new System.EventHandler(this.ConfigToolStripMenuItem_Click);
             // 
             // alterarEndereçoDoLeitorToolStripMenuItem
             // 
             this.alterarEndereçoDoLeitorToolStripMenuItem.Name = "alterarEndereçoDoLeitorToolStripMenuItem";
             this.alterarEndereçoDoLeitorToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.alterarEndereçoDoLeitorToolStripMenuItem.Text = "Alterar endereço do leitor";
-            this.alterarEndereçoDoLeitorToolStripMenuItem.Click += new System.EventHandler(this.alterarEndereçoDoLeitorToolStripMenuItem_Click);
+            this.alterarEndereçoDoLeitorToolStripMenuItem.Click += new System.EventHandler(this.AlterarEndereçoDoLeitorToolStripMenuItem_Click);
             // 
             // ajudaToolStripMenuItem
             // 
@@ -106,27 +106,27 @@ namespace portalIntermec
             this.sobreToolStripMenuItem.Name = "sobreToolStripMenuItem";
             this.sobreToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
             this.sobreToolStripMenuItem.Text = "Sobre";
-            this.sobreToolStripMenuItem.Click += new System.EventHandler(this.sobreToolStripMenuItem_Click);
+            this.sobreToolStripMenuItem.Click += new System.EventHandler(this.SobreToolStripMenuItem_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(599, 151);
+            this.button1.Location = new System.Drawing.Point(599, 170);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(121, 23);
             this.button1.TabIndex = 2;
             this.button1.Text = "Iniciar leitura";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(599, 122);
+            this.button3.Location = new System.Drawing.Point(599, 141);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(121, 23);
             this.button3.TabIndex = 4;
             this.button3.Text = "Conectar ao leitor";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
             // 
             // Form1
             // 

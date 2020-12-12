@@ -21,7 +21,6 @@ namespace portalIntermec
         private DatabaseAdonis dbAdonis = null;
         private BRIReader reader = null;
         private string address = default;
-        private GPITrigger GPITrig = null;
         private Tag_EventHandlerAdv m_TagEventHandler = null;
         private int idCount = 0;
         private bool isReading = false;
@@ -32,6 +31,26 @@ namespace portalIntermec
         public Form1()
         {
             InitializeComponent();
+            this.FormClosing += Form1_FormClosing;
+        }
+
+        private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            else if (e.CloseReason == CloseReason.UserClosing)
+            {
+
+                switch(MessageBox.Show(this, "Você deseja sair?", "Você tem certeza?", MessageBoxButtons.YesNo))
+                {
+                    case DialogResult.No:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.Yes:
+                        Cleanup();
+                        break;
+                }
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -45,7 +64,7 @@ namespace portalIntermec
             this.dataGridView1.Columns[2].Width = 325;
             this.db = new Database();
             this.dbAdonis = new DatabaseAdonis();
-            this.address = readConfigFile();
+            this.address = ReadConfigFile();
 
             try
             {
@@ -57,7 +76,7 @@ namespace portalIntermec
             }
         }
 
-        public string readConfigFile()
+        public string ReadConfigFile()
         {
             string arq = "";
             string address = default;
@@ -80,14 +99,14 @@ namespace portalIntermec
             return address;
         }
 
-        private void readTags()
+        private void ReadTags()
         {
-            this.EventRead();
+            EventRead();
         }
 
         void BRIReaderEventHandler_Tag(object sender, EVTADV_Tag_EventArgs EvtArgs)
         {
-            this.onTagRead(EvtArgs.Tag);
+            OnTagRead(EvtArgs.Tag);
         }
 
         public void EventRead()
@@ -152,21 +171,21 @@ namespace portalIntermec
             }
         }*/
 
-        public void onTagRead(Intermec.DataCollection.RFID.Tag tag)
+        public void OnTagRead(Intermec.DataCollection.RFID.Tag tag)
         {
             if (Regex.IsMatch(tag.ToString(), @"^[0-9]*$"))
             {
                 if (db.checkDupe(tag.ToString()) == 0)
                 {
-                    this.idCount++;
-                    this.lista.Add(new Tag(this.idCount, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), tag.ToString()));
-                    this.dataGridView1.Refresh();
+                    idCount++;
+                    lista.Add(new Tag(idCount, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), tag.ToString()));
+                    dataGridView1.Refresh();
                     db.insertDB(tag.ToString());
                     dbAdonis.update(tag.ToString());
                 }
             }
         }
-        public void insertTags(Intermec.DataCollection.RFID.Tag[] tags)
+        public void InsertTags(Intermec.DataCollection.RFID.Tag[] tags)
         {
             if(tags == null)
             {
@@ -174,35 +193,37 @@ namespace portalIntermec
             }
             for(int i = 0; i < tags.Length; i++)
             {
-                onTagRead(tags[i]);
+                OnTagRead(tags[i]);
             }
         }
 
-        public void closeConn()
-        {
-            try
-            {
-                this.reader.DeleteGPITrigger(GPITrig);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void configToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void alterarEndereçoDoLeitorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void Cleanup()
+        {
+            if(reader != null)
+            {
+                reader.StopReadingTags();
+                reader.Dispose();
+            }
+            if(db != null && dbAdonis != null)
+            {
+                db.closeConnection();
+                dbAdonis.closeConnection();
+            }
+        }
+
+        private void AlterarEndereçoDoLeitorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Form2 f2 = new Form2();
             f2.ShowDialog();
-            this.address = readConfigFile();
+            address = ReadConfigFile();
         }
 
-        private void sobreToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SobreToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String outputMessage = string.Format("Portal - Intermec{0}" +
                                                  "Developers: Willian Soares, Renato Denardin, Michel Rodrigues{0}" +
@@ -211,7 +232,7 @@ namespace portalIntermec
             MessageBox.Show(outputMessage);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             if(!isConnected)
             {
@@ -221,8 +242,8 @@ namespace portalIntermec
             {
                 if (!isReading)
                 {
-                    this.isReading = true;
-                    this.readTags();
+                    isReading = true;
+                    ReadTags();
                     button1.Enabled = false;
                 }
                 else
@@ -232,25 +253,25 @@ namespace portalIntermec
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
-            this.isReading = false;
+            isReading = false;
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             if(!isConnected)
             {
                 try
                 {
-                    this.reader = new BRIReader(this, address);
-                    this.isConnected = true;
+                    reader = new BRIReader(this, address);
+                    isConnected = true;
                     MessageBox.Show("Leitor conectado com sucesso!");
                     button3.Enabled = false;
                     try
                     {
-                        this.reader.Attributes.RFIDTagType = BRIReader.RFIDTagTypes.EPCC1G2;
-                        this.reader.Attributes.ReadTries = 3;
+                        reader.Attributes.RFIDTagType = BRIReader.RFIDTagTypes.EPCC1G2;
+                        reader.Attributes.ReadTries = 3;
                     }
                     catch (Exception ex)
                     {

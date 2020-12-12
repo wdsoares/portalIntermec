@@ -62,18 +62,6 @@ namespace portalIntermec
             this.dataGridView1.Columns[0].Width = 40;
             this.dataGridView1.Columns[1].Width = 200;
             this.dataGridView1.Columns[2].Width = 325;
-            this.db = new Database();
-            this.dbAdonis = new DatabaseAdonis();
-            this.address = ReadConfigFile();
-
-            try
-            {
-                this.db.createDB();
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show("Exception: " + ex.Message);
-            }
         }
 
         public string ReadConfigFile()
@@ -175,13 +163,13 @@ namespace portalIntermec
         {
             if (Regex.IsMatch(tag.ToString(), @"^[0-9]*$"))
             {
-                if (db.checkDupe(tag.ToString()) == 0)
+                if (db.CheckDupe(tag.ToString()) == 0)
                 {
                     idCount++;
                     lista.Add(new Tag(idCount, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), tag.ToString()));
                     dataGridView1.Refresh();
-                    db.insertDB(tag.ToString());
-                    dbAdonis.update(tag.ToString());
+                    db.InsertDB(tag.ToString());
+                    dbAdonis.Update(tag.ToString());
                 }
             }
         }
@@ -211,8 +199,8 @@ namespace portalIntermec
             }
             if(db != null && dbAdonis != null)
             {
-                db.closeConnection();
-                dbAdonis.closeConnection();
+                db.CloseConnection();
+                dbAdonis.CloseConnection();
             }
         }
 
@@ -260,7 +248,21 @@ namespace portalIntermec
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            if(!isConnected)
+            if (db == null && dbAdonis == null)
+            {
+                db = new Database();
+                dbAdonis = new DatabaseAdonis();
+                address = ReadConfigFile();
+                try
+                {
+                    db.CreateDB();
+                }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show("Exception: " + ex.Message);
+                }
+            } 
+            if (!isConnected)
             {
                 try
                 {

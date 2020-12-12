@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace portalIntermec
 {
@@ -13,24 +14,24 @@ namespace portalIntermec
     {
         public Database()
         {
-            this.readDBSettings();
+            this.ReadDBSettings();
         }
         private string _connectionString { get; set; }
         private MySqlConnection _connection { get; set; }
 
-        public void setConnection(string conn)
+        public void SetConnection(string conn)
         {
             _connection = new MySqlConnection(conn);
         }
-        public void openConnection()
+        public void OpenConnection()
         {
             _connection.Open();
         }
-        public void closeConnection()
+        public void CloseConnection()
         {
             _connection.Close();
         }
-        public int checkDupe(string rdrTag)
+        public int CheckDupe(string rdrTag)
         {
             List<Tag> lista = new List<Tag>();
             int result;
@@ -41,7 +42,7 @@ namespace portalIntermec
             return result;
         }
 
-        public void readDBSettings()
+        public void ReadDBSettings()
         {
             string arq = "";
 
@@ -51,8 +52,7 @@ namespace portalIntermec
             }
             catch (IOException e)
             {
-                Console.WriteLine("Não foi possível ler o arquivo de configs!");
-                Console.WriteLine(e.Message);
+                MessageBox.Show("Não foi possível ler o arquivo de configs! Erro: " + e.Message);
             }
 
             if (arq.Length > 1)
@@ -64,11 +64,11 @@ namespace portalIntermec
                 string port = (string)obj["portal"]["port"];
 
                 this._connectionString = "server=" + host + ";user id=" + user + ";password=" + password + ";port=" + port + ";database=portal";
-                this.setConnection(_connectionString);
+                this.SetConnection(_connectionString);
             }
         }
 
-        public void createDB()
+        public void CreateDB()
         {
             string createSchema = "CREATE TABLE IF NOT EXISTS `portal`.`saida` " +
             "(`id` int NOT NULL AUTO_INCREMENT, `dataHora` datetime NOT NULL," +
@@ -79,34 +79,33 @@ namespace portalIntermec
 
             try
             {
-                this.openConnection();
+                this.OpenConnection();
                 cmd.ExecuteNonQuery();
-                this.closeConnection();
+                this.CloseConnection();
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
         }
 
-        public void insertDB(string epc)
+        public void InsertDB(string epc)
         {
             string sql = "INSERT INTO saida(dataHora, tag) VALUES (now(), \"" + epc + "\")";
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try
             {
-                this.openConnection();
+                this.OpenConnection();
                 cmd.ExecuteNonQuery();
-                this.closeConnection();
+                this.CloseConnection();
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
-            Console.WriteLine("Tag inserida: " + epc);
         }
 
-        public string get()
+        public string Get()
         {
             List<Tag> lista = new List<Tag>();
             string result = "";
@@ -115,25 +114,25 @@ namespace portalIntermec
             {
                 string sql = "SELECT * FROM saida";
                 MySqlCommand cmd = new MySqlCommand(sql, _connection);
-                this.openConnection();
+                this.OpenConnection();
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                 {
                     lista.Add(new Tag(rdr.GetInt32(0), Convert.ToString(rdr.GetDateTime(1)), rdr.GetString(2)));
                 }
-                this.closeConnection();
+                this.CloseConnection();
                 rdr.Close();
                 result = String.Concat(result, JsonConvert.SerializeObject(lista));
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
 
             return result;
         }
-        public string get(string tag)
+        public string Get(string tag)
         {
             List<Tag> lista = new List<Tag>();
             string result = "";
@@ -143,20 +142,20 @@ namespace portalIntermec
 
             try
             {
-                this.openConnection();
+                this.OpenConnection();
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                 {
                     lista.Add(new Tag(rdr.GetInt32(0), Convert.ToString(rdr.GetDateTime(1)), rdr.GetString(2)));
                 }
-                this.closeConnection();
+                this.CloseConnection();
                 rdr.Close();
                 result = String.Concat(result, JsonConvert.SerializeObject(lista));
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
 
             return result;

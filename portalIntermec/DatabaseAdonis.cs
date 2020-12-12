@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace portalIntermec
 {
@@ -16,21 +17,21 @@ namespace portalIntermec
 
         public DatabaseAdonis()
         {
-            this.readDBSettings();
+            this.ReadDBSettings();
         }
-        public void openConnection()
+        public void OpenConnection()
         {
             _connection.Open();
         }
-        public void closeConnection()
+        public void CloseConnection()
         {
             _connection.Close();
         }
-        public void setConnection(string conn)
+        public void SetConnection(string conn)
         {
             _connection = new MySqlConnection(conn);
         }
-        public void readDBSettings()
+        public void ReadDBSettings()
         {
             string arq = "";
 
@@ -40,8 +41,7 @@ namespace portalIntermec
             }
             catch (IOException e)
             {
-                Console.WriteLine("Não foi possível ler o arquivo de configs!");
-                Console.WriteLine(e.Message);
+                MessageBox.Show("Não foi possível ler o arquivo de configs! Erro: " + e.Message);
             }
 
             if (arq.Length > 1)
@@ -53,25 +53,26 @@ namespace portalIntermec
                 string port = (string)obj["adonis"]["port"];
 
                 this._connectionString = "server=" + host + ";user id=" + user + ";password=" + password + ";port=" + port + ";database=adonis";
-                this.setConnection(_connectionString);
+                this.SetConnection(_connectionString);
             }
         }
-        public void update(string epc)
+        public void Update(string epc)
         {
             string sql = "UPDATE products p JOIN barcodes b " +
                          "ON p.id = b.product_id JOIN tags t " +
                          "ON b.id = t.barcode_id SET p.purchases = p.purchases + 1 " +
                          "WHERE t.epc =  \"" + epc + "\"";
+
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try
             {
-                this.openConnection();
+                this.OpenConnection();
                 cmd.ExecuteNonQuery();
-                this.closeConnection();
+                this.CloseConnection();
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
         }
     }

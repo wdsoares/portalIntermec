@@ -58,10 +58,8 @@ namespace portalIntermec
         }
         public void Update(string epc)
         {
-            string sql = "UPDATE products p JOIN barcodes b " +
-                         "ON p.id = b.product_id JOIN tags t " +
-                         "ON b.id = t.barcode_id SET p.purchases = p.purchases + 1 " +
-                         "WHERE t.epc =  \"" + epc + "\"";
+            int tag_id = GetTagID(epc);
+            string sql = "INSERT INTO saidas(tag_id, created_at, updated_at) VALUES (" + tag_id + " , now(), now())";
 
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try
@@ -74,6 +72,36 @@ namespace portalIntermec
             {
                 MessageBox.Show(e.Message);
             }
+        }
+
+        private int GetTagID(string epc)
+        {
+            string sql = "SELECT t.id FROM tags t WHERE t.epc like \"" + epc + "\"";
+            int tag_id = -1;
+            MySqlDataReader rdr = null;
+
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(sql, this._connection);
+                OpenConnection();
+                rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    tag_id = rdr.GetInt32(0);
+                }
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                CloseConnection();
+                rdr.Close();
+            }
+
+            return tag_id;
         }
     }
 }

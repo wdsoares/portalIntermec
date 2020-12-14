@@ -213,10 +213,10 @@ namespace portalIntermec
 
         private void SobreToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            String outputMessage = string.Format("Portal - Intermec{0}" +
+            String outputMessage = string.Format("Portal - Intermec IF2{0}" +
                                                  "Developers: Willian Soares, Renato Denardin, Michel Rodrigues{0}" +
                                                  "Orientador: João Baptista Martins{0}" +
-                                                 "gmicro - UFSM", Environment.NewLine);
+                                                 "gmicro - UFSM, Beltrame casa completa", Environment.NewLine);
             MessageBox.Show(outputMessage);
         }
 

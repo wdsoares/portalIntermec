@@ -33,6 +33,23 @@ namespace portalIntermec
             InitializeComponent();
             this.FormClosing += Form1_FormClosing;
         }
+        public Form1(string arg)
+        {
+            InitializeComponent();
+            this.FormClosing += Form1_FormClosing;
+            if (arg == "--startReading")
+            {
+                this.Shown += new System.EventHandler(this.Form1_Shown);
+            }
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            button3.PerformClick();
+            button1.PerformClick();
+            button3.Enabled = false;
+            button1.Enabled = false;
+        }
 
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
@@ -241,11 +258,6 @@ namespace portalIntermec
             }
         }
 
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            isReading = false;
-        }
-
         private void Button3_Click(object sender, EventArgs e)
         {
             if (db == null && dbAdonis == null)
@@ -268,7 +280,6 @@ namespace portalIntermec
                 {
                     reader = new BRIReader(this, address);
                     isConnected = true;
-                    MessageBox.Show("Leitor conectado com sucesso!");
                     button3.Enabled = false;
                     try
                     {

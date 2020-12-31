@@ -18,6 +18,7 @@ namespace portalIntermec
         }
         private string _connectionString { get; set; }
         private MySqlConnection _connection { get; set; }
+        private string readerAlias { get; set; }
 
         public void SetConnection(string conn)
         {
@@ -45,11 +46,14 @@ namespace portalIntermec
                     result = dtr.GetInt32(0);
                 }
                 dtr.Close();
-                CloseConnection();
             }
             catch
             {
                 MessageBox.Show("Não foi possível checar duplicatas!");
+            }
+            finally
+            {
+                CloseConnection();
             }
             return result;
         }
@@ -60,7 +64,7 @@ namespace portalIntermec
 
             try
             {
-                arq = File.ReadAllText("./dbSettings.json");
+                arq = File.ReadAllText("./dbSettings.json", Encoding.UTF8);
             }
             catch (IOException e)
             {
@@ -74,8 +78,10 @@ namespace portalIntermec
                 string password = (string)obj["portal"]["password"];
                 string host = (string)obj["portal"]["host"];
                 string port = (string)obj["portal"]["port"];
+                string dbName = (string)obj["portal"]["dbName"];
+                readerAlias = (string)obj["leitorConfigs"]["portalName"];
 
-                this._connectionString = "server=" + host + ";user id=" + user + ";password=" + password + ";port=" + port + ";database=portal";
+                this._connectionString = "server=" + host + ";user id=" + user + ";password=" + password + ";port=" + port + ";database=" + dbName;
                 this.SetConnection(_connectionString);
             }
         }
@@ -84,7 +90,7 @@ namespace portalIntermec
         {
             string createSchema = "CREATE TABLE IF NOT EXISTS `portal`.`saida` " +
             "(`id` int NOT NULL AUTO_INCREMENT, `dataHora` datetime NOT NULL," +
-            "`tag` varchar(100) DEFAULT NULL, PRIMARY KEY (`id`)) " +
+            "`tag` varchar(100) DEFAULT NULL, `portalName` varchar(255) DEFAULT NULL ,PRIMARY KEY (`id`)) " +
             "ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;";
 
             MySqlCommand cmd = new MySqlCommand(createSchema, _connection);
@@ -103,7 +109,7 @@ namespace portalIntermec
 
         public void InsertDB(string epc)
         {
-            string sql = "INSERT INTO saida(dataHora, tag) VALUES (now(), \"" + epc + "\")";
+            string sql = "INSERT INTO saida(dataHora, tag, portalName) VALUES (now(), `" + epc + "`, `" + readerAlias + "`)";
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try
             {

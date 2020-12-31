@@ -13,7 +13,7 @@ namespace portalIntermec
     {
         private string _connectionString { get; set; }
         private MySqlConnection _connection { get; set; }
-
+        private string readerAlias { get; set; }
 
         public DatabaseAdonis()
         {
@@ -37,7 +37,7 @@ namespace portalIntermec
 
             try
             {
-                arq = File.ReadAllText("./dbSettings.json");
+                arq = File.ReadAllText("./dbSettings.json", Encoding.UTF8);
             }
             catch (IOException e)
             {
@@ -51,15 +51,17 @@ namespace portalIntermec
                 string password = (string)obj["adonis"]["password"];
                 string host = (string)obj["adonis"]["host"];
                 string port = (string)obj["adonis"]["port"];
+                string dbName = (string)obj["adonis"]["dbName"];
+                readerAlias = (string)obj["leitorConfigs"]["portalName"];
 
-                this._connectionString = "server=" + host + ";user id=" + user + ";password=" + password + ";port=" + port + ";database=adonis";
-                this.SetConnection(_connectionString);
+                _connectionString = "server=" + host + ";user id=" + user + ";password=" + password + ";port=" + port + ";database=" + dbName;
+                SetConnection(_connectionString);
             }
         }
         public void Update(string epc)
         {
             int tag_id = GetTagID(epc);
-            string sql = "INSERT INTO saidas(tag_id, created_at, updated_at) VALUES (" + tag_id + " , now(), now())";
+            string sql = "INSERT INTO saidas(tag_id, created_at, updated_at, portalName) VALUES (" + tag_id + " , now(), now(), `" + readerAlias + "`)";
 
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try

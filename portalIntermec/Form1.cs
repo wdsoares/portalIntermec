@@ -88,7 +88,7 @@ namespace portalIntermec
 
             try
             {
-                arq = File.ReadAllText("./dbSettings.json");
+                arq = File.ReadAllText("./dbSettings.json", Encoding.UTF8);
             }
             catch (IOException e)
             {
@@ -99,7 +99,7 @@ namespace portalIntermec
             if (arq.Length > 1)
             {
                 JObject obj = JObject.Parse(arq);
-                address = (string)obj["intermec"]["address"];
+                address = (string)obj["leitorConfigs"]["address"];
             }
             return address;
         }

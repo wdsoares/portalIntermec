@@ -52,11 +52,11 @@ namespace portalIntermec
 
         public void readConfigFile()
         {
-            string address = default;
+            string address;
 
             try
             {
-                this.arq = File.ReadAllText("./dbSettings.json");
+                this.arq = File.ReadAllText("./dbSettings.json", Encoding.UTF8);
             }
             catch (IOException e)
             {
@@ -67,7 +67,7 @@ namespace portalIntermec
             if (arq.Length > 1)
             {
                 JObject obj = JObject.Parse(arq);
-                address = (string)obj["intermec"]["address"];
+                address = (string)obj["leitorConfigs"]["address"];
                 textBox1.Text = address;
             }
         }
@@ -77,11 +77,11 @@ namespace portalIntermec
             if (arq.Length > 1)
             {
                 JObject obj = JObject.Parse(arq);
-                JObject intermec = (JObject)obj["intermec"];
+                JObject intermec = (JObject)obj["leitorConfigs"];
                 intermec["address"] = addr;
                 try
                 {
-                    File.WriteAllText(@"./dbSettings.json", JsonConvert.SerializeObject(obj, Formatting.Indented));
+                    File.WriteAllText(@"./dbSettings.json", JsonConvert.SerializeObject(obj, Formatting.Indented), Encoding.UTF8);
                     MessageBox.Show("Configurações salvas!");
                     this.Close();
                 }

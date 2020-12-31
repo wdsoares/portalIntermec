@@ -1,20 +1,23 @@
 {
-    "intermec":
+    "leitorConfigs":
     {
-        "address": "tcp://192.168.0.203"
+      "address": "tcp://192.168.0.203",
+      "portalName": "Depósito"
     },
     "portal":
     {
         "user": "root",
         "password": "admin",
         "host": "localhost",
-        "port": "3306"
+        "port": "3306",
+        "dbName": "portal"
     },
     "adonis":
     {
         "user": "root",
         "password": "admin",
         "host": "localhost",
-        "port": "3306"
+        "port": "3306",
+        "dbName": "adonis"
     }
 }

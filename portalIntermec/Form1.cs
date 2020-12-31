@@ -190,7 +190,7 @@ namespace portalIntermec
                 }
             }
         }
-        public void InsertTags(Intermec.DataCollection.RFID.Tag[] tags)
+        /*public void InsertTags(Intermec.DataCollection.RFID.Tag[] tags)
         {
             if(tags == null)
             {
@@ -200,7 +200,7 @@ namespace portalIntermec
             {
                 OnTagRead(tags[i]);
             }
-        }
+        }*/
 
         private void ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -262,11 +262,11 @@ namespace portalIntermec
         {
             if (db == null && dbAdonis == null)
             {
-                db = new Database();
-                dbAdonis = new DatabaseAdonis();
-                address = ReadConfigFile();
                 try
                 {
+                    db = new Database();
+                    dbAdonis = new DatabaseAdonis();
+                    address = ReadConfigFile();
                     db.CreateDB();
                 }
                 catch (MySqlException ex)

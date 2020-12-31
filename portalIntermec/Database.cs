@@ -33,12 +33,24 @@ namespace portalIntermec
         }
         public int CheckDupe(string rdrTag)
         {
-            List<Tag> lista = new List<Tag>();
-            int result;
-            string sql = "SELECT COUNT(id) FROM saida WHERE tag = \"" + rdrTag + "\"";
+            int result = -1;
+            string sql = "SELECT COUNT(id) FROM saida WHERE tag = '" + rdrTag + "'";
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
-            result = int.Parse(cmd.ExecuteScalar().ToString());
-
+            try
+            {
+                OpenConnection();
+                MySqlDataReader dtr = cmd.ExecuteReader();
+                while (dtr.Read())
+                {
+                    result = dtr.GetInt32(0);
+                }
+                dtr.Close();
+                CloseConnection();
+            }
+            catch
+            {
+                MessageBox.Show("Não foi possível checar duplicatas!");
+            }
             return result;
         }
 

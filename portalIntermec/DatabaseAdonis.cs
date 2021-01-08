@@ -61,7 +61,7 @@ namespace portalIntermec
         public void Update(string epc)
         {
             int tag_id = GetTagID(epc);
-            string sql = "INSERT INTO saidas(tag_id, created_at, updated_at, portalName) VALUES (" + tag_id + " , now(), now(), `" + readerAlias + "`)";
+            string sql = "INSERT INTO saidas(tag_id, created_at, updated_at, portalName) VALUES (" + tag_id + " , now(), now(), \"" + readerAlias + "\")";
 
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try
@@ -95,7 +95,7 @@ namespace portalIntermec
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
             finally
             {

@@ -109,7 +109,7 @@ namespace portalIntermec
 
         public void InsertDB(string epc)
         {
-            string sql = "INSERT INTO saida(dataHora, tag, portalName) VALUES (now(), `" + epc + "`, `" + readerAlias + "`)";
+            string sql = "INSERT INTO saida(dataHora, tag, portalName) VALUES (now(), \"" + epc + "\", \"" + readerAlias + "\")";
             MySqlCommand cmd = new MySqlCommand(sql, _connection);
             try
             {
